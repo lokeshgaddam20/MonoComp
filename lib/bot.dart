@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
@@ -13,9 +16,26 @@ class _MyWidgetState extends State<Chatbot> {
   ChatUser bot = ChatUser(id: '6789', firstName: 'Bot');
   List<ChatMessage> msgs = <ChatMessage>[];
 
-  getMessages(ChatMessage m) {
+  final myuri =
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBrH1dm2NKIripbUa9f8as-eApsfDIoOhg';
+
+  final header = {
+    'Content-Type': 'application/json',
+  };
+
+  getMessages(ChatMessage m) async {
     msgs.insert(0, m);
     setState(() {});
+    var body = {
+      "contents": [
+        {
+          "parts": [
+            {"text": m.text}
+          ]
+        }
+      ]
+    };
+    await http.post(Uri.parse(myuri), headers: header, body: jsonEncode(body));
   }
 
   @override

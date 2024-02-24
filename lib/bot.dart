@@ -35,8 +35,23 @@ class _MyWidgetState extends State<Chatbot> {
         }
       ]
     };
-    await http.post(Uri.parse(myuri), headers: header, body: jsonEncode(body));
-  }
+    await http
+        .post(Uri.parse(myuri), headers: header, body: jsonEncode(body))
+        .then((value) => {
+              if (value.statusCode == 200) {
+                var data = jsonDecode(value.body);
+                print(data['candidates'][0]['contents']['parts'][0]['text']);
+
+                ChatMessage msg = ChatMessage(user: bot, createdAt: DateTime.now(), text: data['candidates'][0]['contents']['parts'][0]['text']);
+                msgs.insert(0, msg);
+                setState(() {}))
+              }
+              else{
+                print("err occured")
+              }
+        })
+        .catchError((e)=>{});
+  }  
 
   @override
   Widget build(BuildContext context) {

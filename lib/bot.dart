@@ -8,13 +8,14 @@ class Chatbot extends StatefulWidget {
   const Chatbot({super.key});
 
   @override
-  State<Chatbot> createState() => _MyWidgetState();
+  State<Chatbot> createState() => _ChatbotState();
 }
 
-class _MyWidgetState extends State<Chatbot> {
+class _ChatbotState extends State<Chatbot> {
   ChatUser me = ChatUser(id: '12345', firstName: 'Me');
   ChatUser bot = ChatUser(id: '6789', firstName: 'Bot');
-  List<ChatMessage> msgs = <ChatMessage>[];
+  List<ChatMessage> msgs = [];
+  List<ChatUser> typing = [];
 
   final myuri =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBrH1dm2NKIripbUa9f8as-eApsfDIoOhg';
@@ -23,45 +24,54 @@ class _MyWidgetState extends State<Chatbot> {
     'Content-Type': 'application/json',
   };
 
-  getMessages(ChatMessage m) async {
-    msgs.insert(0, m);
-    setState(() {});
-    var body = {
-      "contents": [
-        {
-          "parts": [
-            {"text": m.text}
-          ]
-        }
-      ]
-    };
-    await http
-        .post(Uri.parse(myuri), headers: header, body: jsonEncode(body))
-        .then((value) => {
-              if (value.statusCode == 200) {
-                var data = jsonDecode(value.body);
-                print(data['candidates'][0]['contents']['parts'][0]['text']);
+  Future<void> getMessages(ChatMessage m) async {
+    try {
+      typing.add(bot);
+      msgs.insert(0, m);
+      setState(() {});
+      var body = {
+        "contents": [
+          {
+            "parts": [
+              {"text": m.text}
+            ]
+          }
+        ]
+      };
+      final response = await http.post(Uri.parse(myuri),
+          headers: header, body: jsonEncode(body));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        print(data['candidates'][0]['contents']['parts'][0]['text']);
 
-                ChatMessage msg = ChatMessage(user: bot, createdAt: DateTime.now(), text: data['candidates'][0]['contents']['parts'][0]['text']);
-                msgs.insert(0, msg);
-                setState(() {}))
-              }
-              else{
-                print("err occured")
-              }
-        })
-        .catchError((e)=>{});
-  }  
+        ChatMessage msg = ChatMessage(
+            user: bot,
+            createdAt: DateTime.now(),
+            text: data['candidates'][0]['contents']['parts'][0]['text']);
+        msgs.insert(0, msg);
+        setState(() {});
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception occurred: $e");
+    } finally {
+      typing.remove(bot);
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: DashChat(
-      currentUser: me,
-      onSend: (ChatMessage message) {
-        getMessages(message);
-      },
-      messages: msgs,
-    ));
+      body: DashChat(
+        typingUsers: typing,
+        currentUser: me,
+        onSend: (ChatMessage message) {
+          getMessages(message);
+        },
+        messages: msgs,
+      ),
+    );
   }
 }

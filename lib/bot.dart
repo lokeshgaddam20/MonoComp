@@ -13,14 +13,18 @@ class _MyWidgetState extends State<Chatbot> {
   ChatUser bot = ChatUser(id: '6789', firstName: 'Bot');
   List<ChatMessage> msgs = <ChatMessage>[];
 
+  getMessages(ChatMessage m) {
+    msgs.insert(0, m);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
         body: DashChat(
       currentUser: me,
       onSend: (ChatMessage message) {
-        // Add the message to the list of messages
-        msgs.add(message);
+        getMessages(message);
       },
       messages: msgs,
     ));

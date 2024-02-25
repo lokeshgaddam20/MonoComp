@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "910302053246",
+    "project_id": "chatapp-gemini",
+    "storage_bucket": "chatapp-gemini.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910302053246:android:5341e7dae74d9e0e6be92f",
+        "android_client_info": {
+          "package_name": "com.example.geminiai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsLYcbZXqfG6OzGHst_yykSaHkKnetjoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

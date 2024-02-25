@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:geminiai/components/mybutton.dart';
 import 'package:geminiai/components/mytextfield.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmController = TextEditingController();
   final void Function()? onTap;
 
-  LoginPage({super.key, required this.onTap});
+  RegisterPage({super.key, required this.onTap});
 
-  void login() {}
+  void register() {}
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +18,10 @@ class LoginPage extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
-          Icon(Icons.message,
+          Icon(Icons.account_circle_rounded,
               size: 80, color: Theme.of(context).colorScheme.primary),
           const SizedBox(height: 50),
-          Text("Welcome Back",
+          Text("Let's Create an account for you!",
               style: TextStyle(
                   color: Theme.of(context).colorScheme.primary, fontSize: 16)),
           MyTextField(
@@ -36,17 +36,24 @@ class LoginPage extends StatelessWidget {
             controller: passwordController,
           ),
           const SizedBox(height: 10),
+          MyTextField(
+            hintText: "Confirm password",
+            obscureText: true,
+            controller: passwordController,
+          ),
+          const SizedBox(height: 10),
           MyButton(
-            text: "Login",
-            onTap: login,
+            text: "Register",
+            onTap: register,
           ),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Text("Not a member?", style: TextStyle(fontSize: 16)),
+              const Text("Already have an account?",
+                  style: TextStyle(fontSize: 16)),
               GestureDetector(
                 onTap: onTap,
-                child: Text("Register Now",
+                child: const Text("Login Now",
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),

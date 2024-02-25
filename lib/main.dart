@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:geminiai/pages/login.dart';
-import 'package:geminiai/themes/light-mode.dart';
-// import 'package:geminiai/bot.dart';
-// import 'package:geminiai/start.dart';
+import 'package:geminiai/auth/login_register.dart';
+import 'package:geminiai/themes/light_mode.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: lightMode,
-      home: LoginPage(),
+      home: LoginOrRegister(),
       debugShowCheckedModeBanner: false,
     );
   }

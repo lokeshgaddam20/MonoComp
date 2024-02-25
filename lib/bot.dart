@@ -25,11 +25,23 @@ class Chatbot extends StatefulWidget {
 }
 
 class _ChatbotState extends State<Chatbot> {
-  ChatUser me = ChatUser(id: '12345', firstName: 'Me');
-  ChatUser bot = ChatUser(id: '6789', firstName: 'Gemini');
+  late ChatUser me; // Make 'me' variable late to initialize later
+  late ChatUser bot;
   List<ChatMessage> msgs = [];
   List<ChatUser> typing = [];
-  String userAvatarUrl = 'user_avatar_url';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize 'me' user
+    me = ChatUser(id: '12345', firstName: 'Me');
+    // Initialize 'bot' user with the provided GeminiAI data
+    bot = ChatUser(
+      id: '67890',
+      firstName: widget.geminiAi.name,
+      profileImage: widget.geminiAi.avatarUrl,
+    );
+  }
 
   final myuri =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBrH1dm2NKIripbUa9f8as-eApsfDIoOhg';
@@ -88,6 +100,22 @@ class _ChatbotState extends State<Chatbot> {
           getMessages(m);
         },
         messages: msgs,
+        inputOptions: const InputOptions(
+          alwaysShowSend: true,
+          inputDisabled: false,
+          autocorrect: true,
+        ),
+        messageOptions: MessageOptions(
+          currentUserContainerColor: Colors.black,
+          avatarBuilder:
+              (ChatUser user, Function? onAvatarTap, Function? onLongPress) {
+            return CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 20,
+              backgroundImage: NetworkImage(widget.geminiAi.avatarUrl),
+            );
+          },
+        ),
       ),
     );
   }

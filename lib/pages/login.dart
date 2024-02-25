@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geminiai/auth/auth_provider.dart';
 import 'package:geminiai/components/mybutton.dart';
 import 'package:geminiai/components/mytextfield.dart';
 
@@ -10,7 +11,19 @@ class LoginPage extends StatelessWidget {
 
   LoginPage({super.key, required this.onTap});
 
-  void login() {}
+  void login(BuildContext context) async {
+    final AuthProvider authProvider = AuthProvider();
+    try {
+      await authProvider.signInWithEmailAndPassword(
+          emailController.text, passwordController.text);
+    } catch (e) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text(e.toString()),
+              ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +51,7 @@ class LoginPage extends StatelessWidget {
           const SizedBox(height: 10),
           MyButton(
             text: "Login",
-            onTap: login,
+            onTap: () => login(context),
           ),
           const SizedBox(height: 10),
           Row(
@@ -46,7 +59,7 @@ class LoginPage extends StatelessWidget {
               const Text("Not a member?", style: TextStyle(fontSize: 16)),
               GestureDetector(
                 onTap: onTap,
-                child: Text("Register Now",
+                child: const Text("Register Now",
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),

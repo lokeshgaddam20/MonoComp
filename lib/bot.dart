@@ -1,11 +1,24 @@
 import 'dart:convert';
-
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+class GeminiAI {
+  final String name;
+  final String id;
+  final String avatarUrl; // URL to the avatar image
+
+  GeminiAI({
+    required this.name,
+    required this.id,
+    required this.avatarUrl,
+  });
+}
+
 class Chatbot extends StatefulWidget {
-  const Chatbot({super.key});
+  final GeminiAI geminiAi;
+
+  const Chatbot({Key? key, required this.geminiAi}) : super(key: key);
 
   @override
   State<Chatbot> createState() => _ChatbotState();
@@ -13,9 +26,10 @@ class Chatbot extends StatefulWidget {
 
 class _ChatbotState extends State<Chatbot> {
   ChatUser me = ChatUser(id: '12345', firstName: 'Me');
-  ChatUser bot = ChatUser(id: '6789', firstName: 'Bot');
+  ChatUser bot = ChatUser(id: '6789', firstName: 'Gemini');
   List<ChatMessage> msgs = [];
   List<ChatUser> typing = [];
+  String userAvatarUrl = 'user_avatar_url';
 
   final myuri =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyBrH1dm2NKIripbUa9f8as-eApsfDIoOhg';
@@ -24,7 +38,7 @@ class _ChatbotState extends State<Chatbot> {
     'Content-Type': 'application/json',
   };
 
-  Future<void> getMessages(ChatMessage m) async {
+  getMessages(ChatMessage m) async {
     try {
       typing.add(bot);
       msgs.insert(0, m);
@@ -42,12 +56,12 @@ class _ChatbotState extends State<Chatbot> {
           headers: header, body: jsonEncode(body));
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
-        print(data['candidates'][0]['contents']['parts'][0]['text']);
+        print(data['candidates'][0]['content']['parts'][0]['text']);
 
         ChatMessage msg = ChatMessage(
             user: bot,
             createdAt: DateTime.now(),
-            text: data['candidates'][0]['contents']['parts'][0]['text']);
+            text: data['candidates'][0]['content']['parts'][0]['text']);
         msgs.insert(0, msg);
         setState(() {});
       } else {
@@ -64,11 +78,14 @@ class _ChatbotState extends State<Chatbot> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.geminiAi.name),
+      ),
       body: DashChat(
         typingUsers: typing,
         currentUser: me,
-        onSend: (ChatMessage message) {
-          getMessages(message);
+        onSend: (ChatMessage m) {
+          getMessages(m);
         },
         messages: msgs,
       ),

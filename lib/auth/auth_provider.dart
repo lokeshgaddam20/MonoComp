@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthProvider {
+class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<UserCredential> signInWithEmailAndPassword(
       String email, String password) async {
@@ -9,7 +9,7 @@ class AuthProvider {
           email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.code);
+      throw Exception(e);
     }
   }
 }

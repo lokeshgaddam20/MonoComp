@@ -11,16 +11,20 @@ class LoginPage extends StatelessWidget {
   LoginPage({super.key, required this.onTap});
 
   void login(BuildContext context) async {
-    final authProvider = AuthProvider();
+    final BuildContext contextRef = context;
+    if (!contextRef.mounted) return;
+    final authService = AuthService();
     try {
-      await authProvider.signInWithEmailAndPassword(
+      await authService.signInWithEmailAndPassword(
           emailController.text, passwordController.text);
     } catch (e) {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text(e.toString()),
-              ));
+      if (contextRef.mounted) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text(e.toString()),
+                ));
+      }
     }
   }
 

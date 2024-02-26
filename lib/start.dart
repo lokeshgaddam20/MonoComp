@@ -45,10 +45,10 @@ class StartScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
-        actions: [
+        actions: const [
           IconButton(
             onPressed: logout,
-            icon: const Icon(Icons.logout),
+            icon: Icon(Icons.logout),
           ),
         ],
       ),

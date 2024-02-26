@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geminiai/auth/auth_provider.dart';
 import 'package:geminiai/bot.dart';
 
 List<GeminiAI> geminiAiList = [
@@ -22,8 +23,13 @@ List<GeminiAI> geminiAiList = [
   ),
 ];
 
+void logout() {
+  final _auth = AuthService();
+  _auth.signOut();
+}
+
 class StartScreen extends StatelessWidget {
-  const StartScreen({Key? key}) : super(key: key);
+  const StartScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +45,12 @@ class StartScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: logout,
+            icon: const Icon(Icons.logout),
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: geminiAiList.length,

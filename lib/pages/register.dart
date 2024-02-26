@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geminiai/auth/auth_provider.dart';
 import 'package:geminiai/components/mybutton.dart';
 import 'package:geminiai/components/mytextfield.dart';
+import 'package:random_string/random_string.dart';
 
 class RegisterPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -15,8 +16,16 @@ class RegisterPage extends StatelessWidget {
     final authService = AuthService();
     if (passwordController.text == confirmController.text) {
       try {
-        authService.signInWithEmailAndPassword(
+        authService.signUpWithEmailAndPassword(
             emailController.text, passwordController.text);
+
+        String id = randomAlphaNumeric(10);
+        Map<String, dynamic> userInfo = {
+          "email": emailController.text,
+          "password": passwordController.text,
+          "id": id,
+        };
+        authService.addUserInfo(userInfo, id);
       } catch (e) {
         showDialog(
             context: context,
@@ -28,8 +37,11 @@ class RegisterPage extends StatelessWidget {
       showDialog(
           context: context,
           builder: (context) => const AlertDialog(
-                title: Text("Passwords don't match"),
+                title: Text("Passwords don't match!"),
+                contentPadding: EdgeInsets.all(20),
               ));
+      passwordController.text = "";
+      confirmController.text = "";
     }
   }
 
@@ -64,7 +76,7 @@ class RegisterPage extends StatelessWidget {
             MyTextField(
               hintText: "Confirm password",
               obscureText: true,
-              controller: passwordController,
+              controller: confirmController,
             ),
             const SizedBox(height: 10),
             MyButton(

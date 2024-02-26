@@ -23,6 +23,7 @@ class LoginPage extends StatelessWidget {
             context: context,
             builder: (context) => AlertDialog(
                   title: Text(e.toString()),
+                  contentPadding: const EdgeInsets.all(20.0),
                 ));
       }
     }
@@ -65,7 +66,7 @@ class LoginPage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Not a member?", style: TextStyle(fontSize: 16)),
+                  const Text("Not a member? ", style: TextStyle(fontSize: 16)),
                   GestureDetector(
                     onTap: onTap,
                     child: const Text("Register Now",

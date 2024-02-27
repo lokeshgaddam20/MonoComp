@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,6 +30,7 @@ class _ChatbotState extends State<Chatbot> {
   late ChatUser bot;
   List<ChatMessage> msgs = [];
   List<ChatUser> typing = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -54,6 +56,13 @@ class _ChatbotState extends State<Chatbot> {
     try {
       typing.add(bot);
       msgs.insert(0, m);
+      _firestore.collection('chats_${widget.geminiAi.id}').add({
+        'text': m.text,
+        'createdAt': DateTime.now(),
+        'userId': me.id,
+        'userName': me.firstName,
+        'userAvatar': me.profileImage,
+      });
       setState(() {});
       var body = {
         "contents": [
@@ -75,6 +84,13 @@ class _ChatbotState extends State<Chatbot> {
             createdAt: DateTime.now(),
             text: data['candidates'][0]['content']['parts'][0]['text']);
         msgs.insert(0, msg);
+        _firestore.collection('chats_${widget.geminiAi.id}').add({
+          'text': msg.text,
+          'createdAt': DateTime.now(),
+          'userId': bot.id,
+          'userName': bot.firstName,
+          'userAvatar': bot.profileImage,
+        });
         setState(() {});
       } else {
         print("Error: ${response.statusCode}");
@@ -103,29 +119,70 @@ class _ChatbotState extends State<Chatbot> {
           ],
         ),
       ),
-      body: DashChat(
-        typingUsers: typing,
-        currentUser: me,
-        onSend: (ChatMessage m) {
-          getMessages(m);
-        },
-        messages: msgs,
-        inputOptions: const InputOptions(
-          alwaysShowSend: true,
-          inputDisabled: false,
-          autocorrect: true,
-        ),
-        messageOptions: MessageOptions(
-          currentUserContainerColor: Colors.black,
-          avatarBuilder:
-              (ChatUser user, Function? onAvatarTap, Function? onLongPress) {
-            return CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 20,
-              backgroundImage: NetworkImage(widget.geminiAi.avatarUrl),
+      body: StreamBuilder(
+        stream: _firestore
+            .collection('chats_${widget.geminiAi.id}')
+            .orderBy('createdAt',
+                descending: true) // Order messages by timestamp
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          },
-        ),
+          }
+          // } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          //   // If no data is available, display a message indicating no messages
+          //   return const Center(
+          //     child: Text('No messages available'),
+          //   );
+          // }
+          else {
+            final messages = snapshot.data!.docs;
+            List<ChatMessage> chatMessages = [];
+            for (var message in messages) {
+              final text = message['text'];
+              final userId = message['userId'];
+              final userName = message['userName'];
+              final userAvatar = message['userAvatar'];
+
+              final chatMessage = ChatMessage(
+                text: text,
+                user: ChatUser(
+                  id: userId,
+                  firstName: userName,
+                  profileImage: userAvatar,
+                ),
+                createdAt: message['createdAt'].toDate(),
+              );
+              chatMessages.add(chatMessage);
+            }
+            return DashChat(
+              typingUsers: typing,
+              currentUser: me,
+              onSend: (ChatMessage m) {
+                getMessages(m);
+              },
+              messages: chatMessages,
+              inputOptions: const InputOptions(
+                alwaysShowSend: true,
+                inputDisabled: false,
+                autocorrect: true,
+              ),
+              messageOptions: MessageOptions(
+                currentUserContainerColor: Colors.black,
+                avatarBuilder: (ChatUser user, Function? onAvatarTap,
+                    Function? onLongPress) {
+                  return CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 20,
+                    backgroundImage: NetworkImage(widget.geminiAi.avatarUrl),
+                  );
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }

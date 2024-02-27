@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geminiai/auth/auth_provider.dart';
 import 'package:geminiai/bot.dart';
+// import 'package:geminiai/services/chat_service.dart';
 
 List<GeminiAI> geminiAiList = [
   GeminiAI(
@@ -28,9 +29,30 @@ void logout() {
   _auth.signOut();
 }
 
+// void showProfileMenu(BuildContext context, String userName) {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text(userName),
+//           actions: <Widget>[
+//             TextButton(
+//               onPressed: () {
+//                 logout();
+//                 Navigator.pop(context);
+//               },
+//               child: const Text('Logout'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key});
 
+  // final ChatService _chatService = ChatService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

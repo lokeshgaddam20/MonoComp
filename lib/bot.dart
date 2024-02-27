@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class GeminiAI {
   final String name;
   final String id;
-  final String avatarUrl; // URL to the avatar image
+  final String avatarUrl;
 
   GeminiAI({
     required this.name,
@@ -26,7 +26,7 @@ class Chatbot extends StatefulWidget {
 }
 
 class _ChatbotState extends State<Chatbot> {
-  late ChatUser me; // Make 'me' variable late to initialize later
+  late ChatUser me;
   late ChatUser bot;
   List<ChatMessage> msgs = [];
   List<ChatUser> typing = [];
@@ -35,9 +35,7 @@ class _ChatbotState extends State<Chatbot> {
   @override
   void initState() {
     super.initState();
-    // Initialize 'me' user
     me = ChatUser(id: '12345', firstName: 'Me');
-    // Initialize 'bot' user with the provided GeminiAI data
     bot = ChatUser(
       id: '67890',
       firstName: widget.geminiAi.name,
@@ -93,7 +91,12 @@ class _ChatbotState extends State<Chatbot> {
         });
         setState(() {});
       } else {
-        print("Error: ${response.statusCode}");
+        if (context.mounted) {
+          const snackBar = SnackBar(
+            content: Text('Error Occurred! API Call'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       }
     } catch (e) {
       print("Exception occurred: $e");
@@ -130,14 +133,7 @@ class _ChatbotState extends State<Chatbot> {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          }
-          // } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          //   // If no data is available, display a message indicating no messages
-          //   return const Center(
-          //     child: Text('No messages available'),
-          //   );
-          // }
-          else {
+          } else {
             final messages = snapshot.data!.docs;
             List<ChatMessage> chatMessages = [];
             for (var message in messages) {

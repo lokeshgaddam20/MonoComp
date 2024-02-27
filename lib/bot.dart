@@ -18,7 +18,7 @@ class GeminiAI {
 class Chatbot extends StatefulWidget {
   final GeminiAI geminiAi;
 
-  const Chatbot({Key? key, required this.geminiAi}) : super(key: key);
+  const Chatbot({super.key, required this.geminiAi});
 
   @override
   State<Chatbot> createState() => _ChatbotState();
@@ -91,7 +91,17 @@ class _ChatbotState extends State<Chatbot> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.geminiAi.name),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 18,
+              backgroundImage: NetworkImage(widget.geminiAi.avatarUrl),
+            ),
+            const SizedBox(width: 12),
+            Text(widget.geminiAi.name),
+          ],
+        ),
       ),
       body: DashChat(
         typingUsers: typing,

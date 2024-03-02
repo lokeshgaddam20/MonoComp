@@ -1,4 +1,4 @@
-# geminiai
+## MonoComp
 
 A new Flutter project.
 
